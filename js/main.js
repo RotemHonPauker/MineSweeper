@@ -113,10 +113,13 @@ function renderBoard(board) {
             }
             strHTML += `\t<td data-i="${i}" data-j="${j}"
                             class="cell ${className}" 
-                            onclick="onCellClicked(this, ${i}, ${j})">
+                            onclick="onCellClicked(this, ${i}, ${j})"
+                            oncontextmenu="onCellMarked(event, this, ${i}, ${j})"
+                            >
                             ${innerText}
                          </td>\n`
         }
+        //
         strHTML += `</tr>\n`
     }
     const elBoard = document.querySelector('.board')
@@ -165,9 +168,9 @@ function revealCell(elCell, rowIdx, colIdx) {
     }
 }
 
-function onCellMarked(elCell) {
-    // Called when a cell is rightclicked
-    // See how you can hide the context menu on right click
+function onCellMarked(event, elCell, i, j) {
+    event.preventDefault()
+    console.log('hi')
 
 }
 
