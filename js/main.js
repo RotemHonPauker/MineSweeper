@@ -2,20 +2,21 @@
 var gSize
 var gMines
 var gBoard
-
-gGame = {
-    isOn: false,
-    shownCount: 0, // how many cells are shown (help us calculate victory)
-    markedCount: 0, // with flag
-    secsPassed: 0
-}
+var gGame
 
 function onInit(size, mines) {
+    // This is called when page loads
     gSize = size
     gMines = mines
+    gGame = {
+        isOn: false,
+        shownCount: 0, // how many cells are shown (help us calculate victory)
+        markedCount: 0, // with flag
+        secsPassed: 0,
+        lives: 3
+    }
     gBoard = buildBoard()
     renderBoard(gBoard)
-    // This is called when page loads
 }
 
 function buildBoard() {
@@ -104,7 +105,45 @@ function renderBoard(board) {
 
 
 function onCellClicked(elCell, i, j) {
-    // Called when a cell is clicked
+    if (!gBoard.isOn) {
+        gBoard.isOn = true
+        // TODO: setTimer function on
+    }
+    if (elCell.classList.contains("shown")) return
+    if (elCell.classList.contains("marked")) return
+    if (elCell.classList.contains("mine")) {
+        // TODO: reduce setLives function
+    }
+    if (gBoard.isOn) {
+        revealCell(elCell, i, j)
+    }
+}
+
+function revealCell(elCell, i, j) {
+    const cell = gBoard[i][j]
+    class_negs_list = []
+    for (var neg = 1; neg < 9; neg++) {
+        class_negs_list.push(`negs-${neg}`)
+    }
+    no_negs = 'negs-0'
+    if (elCell.classList.contains("mine")) {
+        elCell.classList.add("shown")
+        cell.isShown = true
+    }
+    if (elCell.classlist.contains("negs")) {
+        elCell.classList.add("shown")
+    }
+
+
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i >= board.length) continue
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (i === rowIdx && j === colIdx) continue
+            if (j < 0 || j >= board[0].length) continue
+            var currCell = board[i][j]
+            if (currCell.isMine) count++
+        }
+    }
 
 }
 
