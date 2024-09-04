@@ -1,14 +1,13 @@
 'use strict'
-var gSize
-var gMines
+var gRandom = false
 var gBoard
 var gGame
 
 function onInit(size, mines) {
     // This is called when page loads
-    gSize = size
-    gMines = mines
     gGame = {
+        size: size,
+        mines: mines,
         isOn: false,
         shownCount: 0, // how many cells are shown (help us calculate victory)
         markedCount: 0, // with flag
@@ -25,10 +24,10 @@ function buildBoard() {
     // Call setMinesNegsCount()
     // Return the created board
 
-    const board = []
-    for (var i = 0; i < gSize; i++) {
+    var board = []
+    for (var i = 0; i < gGame.size; i++) {
         board[i] = []
-        for (var j = 0; j < gSize; j++) {
+        for (var j = 0; j < gGame.size; j++) {
             const cell = {
                 minesAroundCount: 0,
                 isShown: false,
@@ -38,22 +37,43 @@ function buildBoard() {
             board[i][j] = cell
         }
     }
-    // Todo: add function setMines + random
-    board[0][1].isMine = true
-    board[2][2].isMine = true
 
-    setMinesNegsCount(board)
+    board = setMines(board)
+    // console.log(board)
+    board = setMinesNegsCount(board)
 
+    return board
+}
+
+function setMines(board) {
+    if (!gRandom) {
+        var i = 0
+        while (i < gGame.mines) {
+            board[Math.floor((i * 3 + 1) / 4)][(i * 3 + 1) % 4].isMine = true
+            i++
+        }
+    } else {
+        var m = gGame.mines
+        while (m > 0) {
+            var rowIdx = Math.floor(Math.random() * (gGame.size))
+            var colIdx = Math.floor(Math.random() * (gGame.size))
+            if (!board[rowIdx][colIdx].isMine) {
+                board[rowIdx][colIdx].isMine = true
+                m--
+            } else continue
+        }
+    }
     return board
 }
 
 function setMinesNegsCount(board) {
     // Count mines around each cell and set the cell's minesAroundCount.
-    for (var i = 0; i < gSize; i++) {
-        for (var j = 0; j < gSize; j++) {
+    for (var i = 0; i < gGame.size; i++) {
+        for (var j = 0; j < gGame.size; j++) {
             board[i][j].minesAroundCount = countMinesNegs(board, i, j)
         }
     }
+    return board
 }
 
 function countMinesNegs(board, rowIdx, colIdx) {
@@ -135,7 +155,7 @@ function revealCell(elCell, rowIdx, colIdx) {
                 if (i < 0 || i >= gBoard.length) continue
                 for (var j = colIdx - 1; j <= colIdx + 1; j++) {
                     if (j < 0 || j >= gBoard[0].length) continue
-                    console.log(i, j)
+                    // console.log(i, j)
                     var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
                     currCell.classList.add("shown")
                     gBoard[i][j].isShown = true
