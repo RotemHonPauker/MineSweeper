@@ -1,16 +1,17 @@
-/* body {
-    background: #111;
+body {
+    background: white;
     font-family: Arial, Helvetica, sans-serif;
-    color: white;
+    color: black;
 }
 
 h1 {
     text-align: center;
 }
 
-.cinema {
+.container {
     width: 600px;
     margin: 60px auto;
+    background-color: grey;
 }
 
 table {
@@ -20,24 +21,21 @@ table {
 
 .cell {
     width: 35px;
-    height: 50px;
-    border-radius: 7px;
-}
-
-.seat {
-    background-color: #761818;
+    height: 35px;
+    border-radius: 1px;
     cursor: pointer;
+    background-color: rgb(192, 187, 187);
 }
 
-.selected {
+.marked {
     background-color: orange;
 }
 
-.booked {
-    background-color: red;
+.shown {
+    background-color: yellow;
 }
 
-.seat.booked:hover {
+/* .seat.booked:hover {
     background-color: gray;
     cursor: not-allowed;
 }

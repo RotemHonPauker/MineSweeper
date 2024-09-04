@@ -85,12 +85,13 @@ function renderBoard(board) {
             if (cell.isMine) {
                 className += ' mine'
                 innerText += '💣'
+            } else {
+                className += `negs negs-${cell.minesAroundCount}`
+                if (cell.minesAroundCount !== 0) {
+                    innerText += cell.minesAroundCount
+                }
             }
-            if ((cell.minesAroundCount !== 0) && (!cell.isMine)) {
-                className += `negs-${cell.minesAroundCount}`
-                innerText += cell.minesAroundCount
-            }
-            strHTML += `\t<td data-i="${i}" data-j="${j}
+            strHTML += `\t<td data-i="${i}" data-j="${j}"
                             class="cell ${className}" 
                             onclick="onCellClicked(this, ${i}, ${j})">
                             ${innerText}
@@ -98,53 +99,50 @@ function renderBoard(board) {
         }
         strHTML += `</tr>\n`
     }
-    console.log(board)
     const elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
 }
 
 
 function onCellClicked(elCell, i, j) {
-    if (!gBoard.isOn) {
-        gBoard.isOn = true
+    if (!gGame.isOn) {
+        gGame.isOn = true
         // TODO: setTimer function on
     }
-    if (elCell.classList.contains("shown")) return
-    if (elCell.classList.contains("marked")) return
-    if (elCell.classList.contains("mine")) {
+    if (elCell.classList.contains('shown')) return
+    if (elCell.classList.contains('marked')) return
+    if (elCell.classList.contains('mine')) {
         // TODO: reduce setLives function
     }
-    if (gBoard.isOn) {
+    if (gGame.isOn) {
         revealCell(elCell, i, j)
     }
 }
 
-function revealCell(elCell, i, j) {
-    const cell = gBoard[i][j]
-    class_negs_list = []
-    for (var neg = 1; neg < 9; neg++) {
-        class_negs_list.push(`negs-${neg}`)
-    }
-    no_negs = 'negs-0'
+function revealCell(elCell, rowIdx, colIdx) {
+    const cell = gBoard[rowIdx][colIdx]
     if (elCell.classList.contains("mine")) {
         elCell.classList.add("shown")
         cell.isShown = true
     }
-    if (elCell.classlist.contains("negs")) {
-        elCell.classList.add("shown")
-    }
-
-
-    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
-        if (i < 0 || i >= board.length) continue
-        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
-            if (i === rowIdx && j === colIdx) continue
-            if (j < 0 || j >= board[0].length) continue
-            var currCell = board[i][j]
-            if (currCell.isMine) count++
+    if (elCell.classList.contains("negs")) {
+        if (!elCell.classList.contains("negs-0")) {
+            elCell.classList.add("shown")
+            cell.isShown = true
+        } else {
+            // TODO: expandShown
+            for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+                if (i < 0 || i >= gBoard.length) continue
+                for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+                    if (j < 0 || j >= gBoard[0].length) continue
+                    console.log(i, j)
+                    var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
+                    currCell.classList.add("shown")
+                    gBoard[i][j].isShown = true
+                }
+            }
         }
     }
-
 }
 
 function onCellMarked(elCell) {
