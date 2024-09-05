@@ -6,6 +6,10 @@ var gTimerInterval
 
 function onInit(size, mines) {
     // This is called when page loads
+    clearInterval(gTimerInterval)
+    const elTimer = document.querySelector('.timer')
+    elTimer.innerText = '00:00'
+
     const lives = (mines > 3) ? 3 : mines
     gGame = {
         size: size,
@@ -184,13 +188,14 @@ function setTimer() {
 
 function renderTimer() {
     const minutes = (parseInt(gGame.secsPassed / 60000) + '').padStart(2, 0)
-    const seconds = (parseInt(gGame.secsPassed / 1000) + '').padStart(2, 0)
+    const seconds = (parseInt((gGame.secsPassed % 60000) / 1000) + '').padStart(2, 0)
     const elTimer = document.querySelector('.timer')
     elTimer.innerText = `${minutes}:${seconds}`
 }
 
 function revealCell(elCell, rowIdx, colIdx) {
     if (!gGame.isOn) return
+    if (elCell.classList.contains("shown")) return
 
     const cell = gBoard[rowIdx][colIdx]
     if (elCell.classList.contains("mine")) {
@@ -206,20 +211,33 @@ function revealCell(elCell, rowIdx, colIdx) {
             cell.isShown = true
             gGame.shownCount++
         } else {
-            // TODO: expandShown
-            for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
-                if (i < 0 || i >= gBoard.length) continue
-                for (var j = colIdx - 1; j <= colIdx + 1; j++) {
-                    if (j < 0 || j >= gBoard[0].length) continue
-                    if (gBoard[i][j].isMarked) continue
-                    var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
-                    currCell.classList.add("shown")
-                    if (!currCell.classList.contains("negs-0")) {
-                        currCell.innerText = gBoard[i][j].minesAroundCount
-                    }
-                    gBoard[i][j].isShown = true
-                    gGame.shownCount++
-                }
+            expandShown(rowIdx, colIdx)
+        }
+    }
+}
+
+function expandShown(rowIdx, colIdx) {
+    // When user clicks a cell with no mines around, 
+    // we need to open not only that cell, but also its neighbors.
+    // NOTE: start with a basic implementation that only opens
+    // the non-mine 1st degree neighbors
+    // BONUS: if you have the time later, try to work more like the
+    // real algorithm (see description at the Bonuses section below)
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (j < 0 || j >= gBoard[0].length) continue
+            if (gBoard[i][j].isMarked) continue
+            if (gBoard[i][j].isShown) continue
+            var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
+            currCell.classList.add("shown")
+            gBoard[i][j].isShown = true
+            gGame.shownCount++
+            //console.log(i, j, gBoard[i][j].isShown)
+            if (!currCell.classList.contains("negs-0")) {
+                currCell.innerText = gBoard[i][j].minesAroundCount
+            } else {
+                expandShown(i, j)
             }
         }
     }
@@ -261,7 +279,7 @@ function checkGameOver() {
 
     // mines:
     elLeftMines.innerText = `${gGame.mines - countMines}`
-    console.log(gGame.mines - countMines, gGame.shownCount, gGame.markedCount)
+    // console.log(gGame.mines - countMines, gGame.shownCount, gGame.markedCount)
     if ((gGame.mines === countMines)
         && (gGame.shownCount + gGame.markedCount === gGame.size ** 2)) {
         gGame.isOn = false
@@ -284,22 +302,9 @@ function revealAllMines() {
 }
 
 function onReset() {
-    const lives = (gGame.mines > 3) ? 3 : gGame.mines
-    gGame.shownCount = 0
-    gGame.markedCount = 0
-    gGame.secsPassed = 0
-    gGame.lives = lives
-
-    gBoard = buildBoard()
-    renderBoard(gBoard)
+    // clearInterval(gTimerInterval)
+    // const elTimer = document.querySelector('.timer')
+    // elTimer.innerText = '00:00'
+    onInit(gGame.size, gGame.mines)
 }
 
-function expandShown(board, elCell, i, j) {
-    // When user clicks a cell with no mines around, 
-    // we need to open not only that cell, but also its neighbors.
-    // NOTE: start with a basic implementation that only opens
-    // the non-mine 1st degree neighbors
-    // BONUS: if you have the time later, try to work more like the
-    // real algorithm (see description at the Bonuses section below)
-
-}
