@@ -5,6 +5,7 @@ var gGame
 
 function onInit(size, mines) {
     // This is called when page loads
+    const lives = (mines > 3) ? 3 : mines
     gGame = {
         size: size,
         mines: mines,
@@ -12,7 +13,7 @@ function onInit(size, mines) {
         shownCount: 0, // how many cells are shown (help us calculate victory)
         markedCount: 0, // with flag
         secsPassed: 0,
-        lives: 3
+        lives: lives
     }
     gBoard = buildBoard()
     renderBoard(gBoard)
@@ -126,9 +127,14 @@ function renderBoard(board) {
         }
         strHTML += `</tr>\n`
     }
-    //${innerText}
     const elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
+
+    const elLives = document.querySelector(".lives .symbol")
+    elLives.innerText = '💛'.repeat(gGame.lives)
+
+    const elSmiley = document.querySelector(".reset-btn")
+    elSmiley.innerText = '😀'
 }
 
 
@@ -145,10 +151,12 @@ function onCellClicked(i, j) {
     if (elCell.classList.contains('shown')) return
     if (elCell.classList.contains('marked')) return
     if (elCell.classList.contains('mine')) {
-        // TODO: reduce setLives function
+        gGame.lives--
+        checkGameOver()
     }
     if (gGame.isOn) {
         revealCell(elCell, i, j)
+        checkGameOver()
     }
 }
 
@@ -158,24 +166,28 @@ function revealCell(elCell, rowIdx, colIdx) {
         elCell.classList.add("shown")
         elCell.innerText = '💣'
         cell.isShown = true
+        gGame.shownCount++
     }
     if (elCell.classList.contains("negs")) {
         if (!elCell.classList.contains("negs-0")) {
             elCell.classList.add("shown")
             elCell.innerText = cell.minesAroundCount
             cell.isShown = true
+            gGame.shownCount++
         } else {
             // TODO: expandShown
             for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
                 if (i < 0 || i >= gBoard.length) continue
                 for (var j = colIdx - 1; j <= colIdx + 1; j++) {
                     if (j < 0 || j >= gBoard[0].length) continue
+                    if (gBoard[i][j].isMarked === true) continue
                     var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
                     currCell.classList.add("shown")
                     if (!currCell.classList.contains("negs-0")) {
                         currCell.innerText = gBoard[i][j].minesAroundCount
                     }
                     gBoard[i][j].isShown = true
+                    gGame.shownCount++
                 }
             }
         }
@@ -189,18 +201,41 @@ function onCellMarked(event, elCell, i, j) {
         elCell.classList.remove("marked")
         elCell.innerText = ''
         gBoard[i][j].isSMarked = false
-        gGame.markedCount -= 1
+        gGame.markedCount--
     } else {
         elCell.classList.add("marked")
         elCell.innerText = '🚩'
         gBoard[i][j].isSMarked = true
-        gGame.markedCount += 1
+        gGame.markedCount++
     }
+    checkGameOver()
 }
 
 function checkGameOver() {
-    // and all the other cells are shown
-    // Game ends when all mines are marked, 
+    const elSmiley = document.querySelector(".reset-btn")
+    const elLives = document.querySelector(".lives .symbol")
+    const numHearts = [...elLives.innerText].length
+    const countMines = gGame.markedCount + (numHearts - gGame.lives)
+    const elLeftMines = document.querySelector(".left-mines")
+
+    // lives:
+    elLives.innerText = '💛'.repeat(gGame.lives) + '💔'.repeat(numHearts - gGame.lives)
+    if (gGame.lives < 1) {
+        gGame.isOn = false
+        elSmiley.innerText = '😫'
+        // TODO: function revealAllMines
+        // TODO: stop function setTimer
+    }
+
+    // mines:
+    elLeftMines.innerText = `${gGame.mines - countMines}`
+    console.log(gGame.mines - countMines, gGame.shownCount, gGame.markedCount)
+    if ((gGame.mines === countMines)
+        && (gGame.shownCount + gGame.markedCount === gGame.size ** 2)) {
+        gGame.isOn = false
+        elSmiley.innerText = '😍'
+        // TODO: stop function setTimer
+    }
 
 }
 
