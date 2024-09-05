@@ -2,6 +2,7 @@
 var gRandom = false
 var gBoard
 var gGame
+var gTimerInterval
 
 function onInit(size, mines) {
     // This is called when page loads
@@ -50,8 +51,8 @@ function setMines(board, clickI, clickJ) {
         var i = 0
         var p = 1
         while (i < gGame.mines) {
-            var rowIdx = Math.floor((i * 3 + p) / 4)
-            var colIdx = (i * 3 + p) % 4
+            var rowIdx = Math.floor((i * 3 + p) / gGame.size)
+            var colIdx = (i * 3 + p) % gGame.size
             if ((clickI === rowIdx) && (clickJ === colIdx)) {
                 p++
                 continue
@@ -136,6 +137,9 @@ function renderBoard(board) {
     const elLeftMines = document.querySelector(".left-mines")
     elLeftMines.innerText = gGame.mines
 
+    const elSmiley = document.querySelector(".reset-btn")
+    elSmiley.innerText = '😀'
+
 }
 
 
@@ -145,7 +149,7 @@ function onCellClicked(i, j) {
         gBoard = setMines(gBoard, i, j)
         gBoard = setMinesNegsCount(gBoard)
         renderBoard(gBoard)
-        // TODO: setTimer function on
+        setTimer()
     }
 
     if (gGame.isOn) {
@@ -161,6 +165,28 @@ function onCellClicked(i, j) {
             checkGameOver()
         }
     }
+}
+
+function setTimer() {
+    if (gGame.secsPassed === 0) {
+        const startTime = Date.now()
+        gTimerInterval = setInterval(() => {
+            gGame.secsPassed = Date.now() - startTime
+            renderTimer()
+        }, 10)
+        console.log('first', gGame.secsPassed, gTimerInterval)
+    } else {
+        clearInterval(gTimerInterval)
+        renderTimer()
+        console.log('second', gGame.secsPassed, gTimerInterval)
+    }
+}
+
+function renderTimer() {
+    const minutes = (parseInt(gGame.secsPassed / 60000) + '').padStart(2, 0)
+    const seconds = (parseInt(gGame.secsPassed / 1000) + '').padStart(2, 0)
+    const elTimer = document.querySelector('.timer')
+    elTimer.innerText = `${minutes}:${seconds}`
 }
 
 function revealCell(elCell, rowIdx, colIdx) {
@@ -185,7 +211,7 @@ function revealCell(elCell, rowIdx, colIdx) {
                 if (i < 0 || i >= gBoard.length) continue
                 for (var j = colIdx - 1; j <= colIdx + 1; j++) {
                     if (j < 0 || j >= gBoard[0].length) continue
-                    if (gBoard[i][j].isMarked === true) continue
+                    if (gBoard[i][j].isMarked) continue
                     var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
                     currCell.classList.add("shown")
                     if (!currCell.classList.contains("negs-0")) {
@@ -201,6 +227,7 @@ function revealCell(elCell, rowIdx, colIdx) {
 
 function onCellMarked(event, elCell, i, j) {
     event.preventDefault()
+    if (!gGame.isOn) return
     if (elCell.classList.contains('shown')) return
     if (elCell.classList.contains("marked")) {
         elCell.classList.remove("marked")
@@ -210,7 +237,7 @@ function onCellMarked(event, elCell, i, j) {
     } else {
         elCell.classList.add("marked")
         elCell.innerText = '🚩'
-        gBoard[i][j].isSMarked = true
+        gBoard[i][j].isMarked = true
         gGame.markedCount++
     }
     checkGameOver()
@@ -228,8 +255,8 @@ function checkGameOver() {
     if (gGame.lives < 1) {
         gGame.isOn = false
         elSmiley.innerText = '😫'
-        // TODO: function revealAllMines
-        // TODO: stop function setTimer
+        revealAllMines()
+        setTimer()
     }
 
     // mines:
@@ -239,27 +266,33 @@ function checkGameOver() {
         && (gGame.shownCount + gGame.markedCount === gGame.size ** 2)) {
         gGame.isOn = false
         elSmiley.innerText = '😍'
-        // TODO: stop function setTimer
+        setTimer()
     }
 
 }
 
-function revealAllMines() { }
+function revealAllMines() {
+    for (var i = 0; i < gGame.size; i++) {
+        for (var j = 0; j < gGame.size; j++) {
+            if (gBoard[i][j].isMine) {
+                var cell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
+                if (!cell.classList.contains("shown")) cell.classList.add("shown")
+                cell.innerText = '💥'
+            }
+        }
+    }
+}
 
-function onRestart() {
+function onReset() {
     const lives = (gGame.mines > 3) ? 3 : gGame.mines
     gGame.shownCount = 0
     gGame.markedCount = 0
     gGame.secsPassed = 0
     gGame.lives = lives
 
-    const elSmiley = document.querySelector(".reset-btn")
-    elSmiley.innerText = '😀'
-
     gBoard = buildBoard()
     renderBoard(gBoard)
 }
-
 
 function expandShown(board, elCell, i, j) {
     // When user clicks a cell with no mines around, 
