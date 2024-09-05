@@ -1,65 +1,94 @@
+:root {
+    --clr-0-0: black;
+    --clr-0-1: white;
+    --clr-1-0: hsl(152, 36%, 70%);
+    --clr-1-1: hsl(164, 23%, 45%);
+    --clr-2-0: hsl(48, 100%, 84%);
+    --clr-2-1: hsl(41, 100%, 68%);
+    --clr-3-0: hsl(2, 100%, 85%);
+    --clr-3-1: hsl(5, 63%, 60%);
+}
+
 body {
-    background: white;
-    font-family: Arial, Helvetica, sans-serif;
-    color: black;
+    background: var(--clr-2-1);
+    font-family: cursive;
+    color: var(--clr-0-0);
+    position: relative;
 }
 
 h1 {
     text-align: center;
+    font-size: 3em;
 }
 
 .container {
-    width: 600px;
-    margin: 60px auto;
-    background-color: grey;
+    width: fit-content;
+    background-color: var(--clr-1-1);
+    border: 0.5em solid var(--clr-1-0);
+    border-radius: 1em;
+    margin-top: 3em;
+    margin-inline: auto;
+    padding: 1em;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
 }
 
 table {
     border-collapse: separate;
-    border-spacing: 10px;
 }
 
 .cell {
-    width: 35px;
-    height: 35px;
-    border-radius: 1px;
+    font-family: cursive;
+    font-size: 1.2em;
+    text-align: center;
+
+    width: 2.5em;
+    height: 2.5em;
+    border-radius: 0.3em;
     cursor: pointer;
-    background-color: rgb(192, 187, 187);
+    background-color: var(--clr-2-0);
 }
 
 .marked {
-    background-color: orange;
+    background-color: var(--clr-3-0);
 }
 
 .shown {
-    background-color: yellow;
+    background-color: var(--clr-1-0);
 }
 
-/* .seat.booked:hover {
-    background-color: gray;
-    cursor: not-allowed;
+p {
+    font-family: cursive;
+    font-size: 1.5em;
+    text-align: center;
 }
 
-.popup {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-
-    background-color: orange;
-    padding: 20px;
+span {
+    margin: 0.3em;
 }
 
-.popup .btn-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+button {
+    font-family: cursive;
+    font-size: 1.2em;
+    text-align: center;
+
+    background-color: var(--clr-2-0);
+    border: 0.2em solid var(--clr-3-1);
+    padding: 0.5em;
+    border-radius: 1em;
     cursor: pointer;
-
-    background-color: transparent;
-    border: 1px solid white;
-    color: white;
 }
 
-.popup .btn-highlight-seats {
-    cursor: pointer;
-} */
+.reset-btn {
+    border: 0.1em solid var(--clr-3-1);
+    padding: 0.2em;
+}
+
+.cell.mine.shown {
+    background-color: var(--clr-3-0);
+}

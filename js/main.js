@@ -1,5 +1,5 @@
 'use strict'
-var gRandom = false
+var gRandom = true
 var gBoard
 var gGame
 var gTimerInterval
@@ -178,11 +178,11 @@ function setTimer() {
             gGame.secsPassed = Date.now() - startTime
             renderTimer()
         }, 10)
-        console.log('first', gGame.secsPassed, gTimerInterval)
+        // console.log('first', gGame.secsPassed, gTimerInterval)
     } else {
         clearInterval(gTimerInterval)
         renderTimer()
-        console.log('second', gGame.secsPassed, gTimerInterval)
+        // console.log('second', gGame.secsPassed, gTimerInterval)
     }
 }
 
