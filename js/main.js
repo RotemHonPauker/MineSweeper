@@ -114,12 +114,11 @@ function renderBoard(board) {
             strHTML += `\t<td data-i="${i}" data-j="${j}"
                             class="cell ${className}" 
                             onclick="onCellClicked(this, ${i}, ${j})"
-                            oncontextmenu="onCellMarked(event, this, ${i}, ${j})"
+                            oncontextmenu="onCellMarked(event, this)"
                             >
                             ${innerText}
                          </td>\n`
         }
-        //
         strHTML += `</tr>\n`
     }
     const elBoard = document.querySelector('.board')
@@ -168,10 +167,20 @@ function revealCell(elCell, rowIdx, colIdx) {
     }
 }
 
-function onCellMarked(event, elCell, i, j) {
+function onCellMarked(event, elCell) {
     event.preventDefault()
-    console.log('hi')
-
+    if (elCell.classList.contains('shown')) return
+    if (elCell.classList.contains("marked")) {
+        elCell.classList.remove("marked")
+        elCell.innerText = ''
+        gBoard[i][j].isSMarked = false
+        gGame.markedCount -= 1
+    } else {
+        elCell.classList.add("marked")
+        elCell.innerText = '🚩'
+        gBoard[i][j].isSMarked = true
+        gGame.markedCount += 1
+    }
 }
 
 function checkGameOver() {
