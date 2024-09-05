@@ -133,13 +133,14 @@ function renderBoard(board) {
     const elLives = document.querySelector(".lives .symbol")
     elLives.innerText = '💛'.repeat(gGame.lives)
 
-    const elSmiley = document.querySelector(".reset-btn")
-    elSmiley.innerText = '😀'
+    const elLeftMines = document.querySelector(".left-mines")
+    elLeftMines.innerText = gGame.mines
+
 }
 
 
 function onCellClicked(i, j) {
-    if (!gGame.isOn) {
+    if (!gGame.isOn && (gGame.secsPassed === 0)) {
         gGame.isOn = true
         gBoard = setMines(gBoard, i, j)
         gBoard = setMinesNegsCount(gBoard)
@@ -147,20 +148,24 @@ function onCellClicked(i, j) {
         // TODO: setTimer function on
     }
 
-    const elCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
-    if (elCell.classList.contains('shown')) return
-    if (elCell.classList.contains('marked')) return
-    if (elCell.classList.contains('mine')) {
-        gGame.lives--
-        checkGameOver()
-    }
     if (gGame.isOn) {
-        revealCell(elCell, i, j)
-        checkGameOver()
+        const elCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
+        if (elCell.classList.contains('shown')) return
+        if (elCell.classList.contains('marked')) return
+        if (elCell.classList.contains('mine')) {
+            gGame.lives--
+            checkGameOver()
+        }
+        if (gGame.isOn) {
+            revealCell(elCell, i, j)
+            checkGameOver()
+        }
     }
 }
 
 function revealCell(elCell, rowIdx, colIdx) {
+    if (!gGame.isOn) return
+
     const cell = gBoard[rowIdx][colIdx]
     if (elCell.classList.contains("mine")) {
         elCell.classList.add("shown")
@@ -238,6 +243,23 @@ function checkGameOver() {
     }
 
 }
+
+function revealAllMines() { }
+
+function onRestart() {
+    const lives = (gGame.mines > 3) ? 3 : gGame.mines
+    gGame.shownCount = 0
+    gGame.markedCount = 0
+    gGame.secsPassed = 0
+    gGame.lives = lives
+
+    const elSmiley = document.querySelector(".reset-btn")
+    elSmiley.innerText = '😀'
+
+    gBoard = buildBoard()
+    renderBoard(gBoard)
+}
+
 
 function expandShown(board, elCell, i, j) {
     // When user clicks a cell with no mines around, 
