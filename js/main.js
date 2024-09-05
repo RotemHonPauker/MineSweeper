@@ -38,18 +38,24 @@ function buildBoard() {
         }
     }
 
-    board = setMines(board)
-    // console.log(board)
-    board = setMinesNegsCount(board)
+    // board = setMines(board)
+    // board = setMinesNegsCount(board)
 
     return board
 }
 
-function setMines(board) {
+function setMines(board, clickI, clickJ) {
     if (!gRandom) {
         var i = 0
+        var p = 1
         while (i < gGame.mines) {
-            board[Math.floor((i * 3 + 1) / 4)][(i * 3 + 1) % 4].isMine = true
+            var rowIdx = Math.floor((i * 3 + p) / 4)
+            var colIdx = (i * 3 + p) % 4
+            if ((clickI === rowIdx) && (clickJ === colIdx)) {
+                p++
+                continue
+            }
+            board[rowIdx][colIdx].isMine = true
             i++
         }
     } else {
@@ -57,6 +63,7 @@ function setMines(board) {
         while (m > 0) {
             var rowIdx = Math.floor(Math.random() * (gGame.size))
             var colIdx = Math.floor(Math.random() * (gGame.size))
+            if ((clickI === rowIdx) && (clickJ === colIdx)) continue
             if (!board[rowIdx][colIdx].isMine) {
                 board[rowIdx][colIdx].isMine = true
                 m--
@@ -113,8 +120,8 @@ function renderBoard(board) {
             }
             strHTML += `\t<td data-i="${i}" data-j="${j}"
                             class="cell ${className}" 
-                            onclick="onCellClicked(this, ${i}, ${j})"
-                            oncontextmenu="onCellMarked(event, this)"
+                            onclick="onCellClicked(${i}, ${j})"
+                            oncontextmenu="onCellMarked(event, this, ${i}, ${j})"
                             >
                             ${innerText}
                          </td>\n`
@@ -126,11 +133,16 @@ function renderBoard(board) {
 }
 
 
-function onCellClicked(elCell, i, j) {
+function onCellClicked(i, j) {
     if (!gGame.isOn) {
         gGame.isOn = true
+        gBoard = setMines(gBoard, i, j)
+        gBoard = setMinesNegsCount(gBoard)
+        renderBoard(gBoard)
         // TODO: setTimer function on
     }
+
+    const elCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
     if (elCell.classList.contains('shown')) return
     if (elCell.classList.contains('marked')) return
     if (elCell.classList.contains('mine')) {
@@ -157,7 +169,6 @@ function revealCell(elCell, rowIdx, colIdx) {
                 if (i < 0 || i >= gBoard.length) continue
                 for (var j = colIdx - 1; j <= colIdx + 1; j++) {
                     if (j < 0 || j >= gBoard[0].length) continue
-                    // console.log(i, j)
                     var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
                     currCell.classList.add("shown")
                     gBoard[i][j].isShown = true
@@ -167,12 +178,12 @@ function revealCell(elCell, rowIdx, colIdx) {
     }
 }
 
-function onCellMarked(event, elCell) {
+function onCellMarked(event, elCell, i, j) {
     event.preventDefault()
     if (elCell.classList.contains('shown')) return
     if (elCell.classList.contains("marked")) {
         elCell.classList.remove("marked")
-        elCell.innerText = ''
+        elCell.innerText = gBoard[i][j].minesAroundCount
         gBoard[i][j].isSMarked = false
         gGame.markedCount -= 1
     } else {
