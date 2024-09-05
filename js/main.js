@@ -106,28 +106,27 @@ function renderBoard(board) {
         for (var j = 0; j < board[0].length; j++) {
             const cell = board[i][j]
             var className = ''
-            var innerText = ''
-            if (cell.isShown) { className += ' shown' }
-            if (cell.isMarked) { className += ' marked' }
+            // var innerText = ''
+            // if (cell.isShown) { className += ' shown' }
+            // if (cell.isMarked) { className += ' marked' }
             if (cell.isMine) {
                 className += ' mine'
-                innerText += '💣'
+                // innerText += '💣'
             } else {
                 className += `negs negs-${cell.minesAroundCount}`
-                if (cell.minesAroundCount !== 0) {
-                    innerText += cell.minesAroundCount
-                }
+                // if (cell.minesAroundCount !== 0) {
+                //    innerText += cell.minesAroundCount
+                // }
             }
             strHTML += `\t<td data-i="${i}" data-j="${j}"
                             class="cell ${className}" 
                             onclick="onCellClicked(${i}, ${j})"
-                            oncontextmenu="onCellMarked(event, this, ${i}, ${j})"
-                            >
-                            ${innerText}
+                            oncontextmenu="onCellMarked(event, this, ${i}, ${j})">
                          </td>\n`
         }
         strHTML += `</tr>\n`
     }
+    //${innerText}
     const elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
 }
@@ -157,11 +156,13 @@ function revealCell(elCell, rowIdx, colIdx) {
     const cell = gBoard[rowIdx][colIdx]
     if (elCell.classList.contains("mine")) {
         elCell.classList.add("shown")
+        elCell.innerText = '💣'
         cell.isShown = true
     }
     if (elCell.classList.contains("negs")) {
         if (!elCell.classList.contains("negs-0")) {
             elCell.classList.add("shown")
+            elCell.innerText = cell.minesAroundCount
             cell.isShown = true
         } else {
             // TODO: expandShown
@@ -171,6 +172,9 @@ function revealCell(elCell, rowIdx, colIdx) {
                     if (j < 0 || j >= gBoard[0].length) continue
                     var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
                     currCell.classList.add("shown")
+                    if (!currCell.classList.contains("negs-0")) {
+                        currCell.innerText = gBoard[i][j].minesAroundCount
+                    }
                     gBoard[i][j].isShown = true
                 }
             }
@@ -183,7 +187,7 @@ function onCellMarked(event, elCell, i, j) {
     if (elCell.classList.contains('shown')) return
     if (elCell.classList.contains("marked")) {
         elCell.classList.remove("marked")
-        elCell.innerText = gBoard[i][j].minesAroundCount
+        elCell.innerText = ''
         gBoard[i][j].isSMarked = false
         gGame.markedCount -= 1
     } else {
