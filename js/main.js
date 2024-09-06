@@ -11,6 +11,7 @@ function onInit(size, mines) {
     elTimer.innerText = '00:00'
 
     const lives = (mines > 3) ? 3 : mines
+    const hints = (mines > 3) ? 3 : mines - 1
     gGame = {
         size: size,
         mines: mines,
@@ -18,7 +19,8 @@ function onInit(size, mines) {
         shownCount: 0, // how many cells are shown (help us calculate victory)
         markedCount: 0, // with flag
         secsPassed: 0,
-        lives: lives
+        lives: lives,
+        hints: hints
     }
     gBoard = buildBoard()
     renderBoard(gBoard)
@@ -145,6 +147,12 @@ function renderBoard(board) {
     elSmiley.innerText = '😀'
     if (elSmiley.classList.contains('game-over')) elSmiley.classList.remove("game-over")
 
+    var strHints = ''
+    for (var i = 0; i < gGame.hints; i++) {
+        strHints += `\t<button class="hint-btn" onclick="onHintClicked(this)">🍀</button>`
+    }
+    const elHints = document.querySelector(".hints")
+    elHints.innerHTML = strHints
 }
 
 
@@ -309,5 +317,9 @@ function onReset() {
     // const elTimer = document.querySelector('.timer')
     // elTimer.innerText = '00:00'
     onInit(gGame.size, gGame.mines)
+}
+
+function onHintClicked(elHint) {
+
 }
 

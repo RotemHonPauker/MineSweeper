@@ -15,7 +15,6 @@
 
 body {
     background: var(--clr-2-1);
-    /* font-family: "Dancing Script", cursive; */
     color: var(--clr-0-0);
     position: relative;
 }
@@ -47,7 +46,6 @@ table {
 }
 
 .cell {
-    /* font-family: "Dancing Script", cursive; */
     font-size: 1.5em;
     text-align: center;
 
@@ -58,7 +56,9 @@ table {
     background-color: var(--clr-2-0);
 }
 
-.marked {
+.marked,
+.cell.mine.shown,
+.game-over {
     background-color: var(--clr-3-0);
 }
 
@@ -66,9 +66,8 @@ table {
     background-color: var(--clr-1-0);
 }
 
-p {
-    /* font-family: "Dancing Script", cursive; */
-    font-size: 1.5em;
+.game-state {
+    font-size: 1.2em;
     text-align: center;
 }
 
@@ -80,9 +79,13 @@ span {
     margin: 0.8em;
 }
 
+.lives {
+    font-size: 1.7em;
+    text-align: center;
+}
+
 button {
-    /* font-family: "Dancing Script", cursive; */
-    font-size: 1.5em;
+    font-size: 1.2em;
     text-align: center;
 
     background-color: var(--clr-2-0);
@@ -92,12 +95,9 @@ button {
     cursor: pointer;
 }
 
-.reset-btn {
+.reset-btn,
+.hint-btn {
     border: 0.1em solid var(--clr-3-1);
     padding: 0.2em;
-}
-
-.cell.mine.shown,
-.game-over {
-    background-color: var(--clr-3-0);
+    font-size: 1.5em;
 }
