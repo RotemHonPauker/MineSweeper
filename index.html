@@ -6,10 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>MineSweeper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body onload="onInit(4, 2)">
+<body class="handwritten" onload="onInit(4, 2)">
     <h1>Minesweeper Game</h1>
     <div class="container">
         <div class="level">
@@ -19,14 +22,14 @@
         </div>
         <div class="info">
             <p class="game-state">
-                <span class="symbol">💣</span>
-                <span class="symbol left-mines"></span>
+                <span class="symbol-mines">💣</span>
+                <span class="mines"></span>
                 <button class="reset-btn" onclick="onReset()"></button>
-                <span class="symbol timer">00:00</span>
-                <span class="symbol">⏳</span>
+                <span class="timer">00:00</span>
+                <span class="symbol-timer">⏳</span>
             </p>
             <p class="lives">
-                <span class="symbol"></span>
+                <span class="symbol-lives"></span>
             </p>
         </div>
         <div>

@@ -1,5 +1,5 @@
 'use strict'
-var gRandom = true
+var gRandom = false
 var gBoard
 var gGame
 var gTimerInterval
@@ -135,14 +135,15 @@ function renderBoard(board) {
     const elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
 
-    const elLives = document.querySelector(".lives .symbol")
+    const elLives = document.querySelector(".symbol-lives")
     elLives.innerText = '💛'.repeat(gGame.lives)
 
-    const elLeftMines = document.querySelector(".left-mines")
+    const elLeftMines = document.querySelector(".mines")
     elLeftMines.innerText = gGame.mines
 
     const elSmiley = document.querySelector(".reset-btn")
     elSmiley.innerText = '😀'
+    if (elSmiley.classList.contains('game-over')) elSmiley.classList.remove("game-over")
 
 }
 
@@ -250,7 +251,7 @@ function onCellMarked(event, elCell, i, j) {
     if (elCell.classList.contains("marked")) {
         elCell.classList.remove("marked")
         elCell.innerText = ''
-        gBoard[i][j].isSMarked = false
+        gBoard[i][j].isMarked = false
         gGame.markedCount--
     } else {
         elCell.classList.add("marked")
@@ -263,10 +264,10 @@ function onCellMarked(event, elCell, i, j) {
 
 function checkGameOver() {
     const elSmiley = document.querySelector(".reset-btn")
-    const elLives = document.querySelector(".lives .symbol")
+    const elLives = document.querySelector(".symbol-lives")
     const numHearts = [...elLives.innerText].length
     const countMines = gGame.markedCount + (numHearts - gGame.lives)
-    const elLeftMines = document.querySelector(".left-mines")
+    const elLeftMines = document.querySelector(".mines")
 
     // lives:
     elLives.innerText = '💛'.repeat(gGame.lives) + '💔'.repeat(numHearts - gGame.lives)
@@ -286,6 +287,8 @@ function checkGameOver() {
         elSmiley.innerText = '😍'
         setTimer()
     }
+
+    if (!gGame.isOn) elSmiley.classList.add("game-over")
 
 }
 

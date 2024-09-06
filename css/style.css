@@ -1,3 +1,7 @@
+* {
+    font-family: "Dancing Script", cursive;
+}
+
 :root {
     --clr-0-0: black;
     --clr-0-1: white;
@@ -11,7 +15,7 @@
 
 body {
     background: var(--clr-2-1);
-    font-family: cursive;
+    /* font-family: "Dancing Script", cursive; */
     color: var(--clr-0-0);
     position: relative;
 }
@@ -43,8 +47,8 @@ table {
 }
 
 .cell {
-    font-family: cursive;
-    font-size: 1.2em;
+    /* font-family: "Dancing Script", cursive; */
+    font-size: 1.5em;
     text-align: center;
 
     width: 2.5em;
@@ -63,18 +67,22 @@ table {
 }
 
 p {
-    font-family: cursive;
+    /* font-family: "Dancing Script", cursive; */
     font-size: 1.5em;
     text-align: center;
 }
 
 span {
-    margin: 0.3em;
+    margin: 0.2em;
+}
+
+.mines {
+    margin: 0.8em;
 }
 
 button {
-    font-family: cursive;
-    font-size: 1.2em;
+    /* font-family: "Dancing Script", cursive; */
+    font-size: 1.5em;
     text-align: center;
 
     background-color: var(--clr-2-0);
@@ -89,6 +97,7 @@ button {
     padding: 0.2em;
 }
 
-.cell.mine.shown {
+.cell.mine.shown,
+.game-over {
     background-color: var(--clr-3-0);
 }
