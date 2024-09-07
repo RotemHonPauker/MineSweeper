@@ -1,5 +1,5 @@
 'use strict'
-var gRandom = false
+var gRandom = true
 var gBoard
 var gGame
 var gTimerInterval
@@ -20,7 +20,8 @@ function onInit(size, mines) {
         markedCount: 0, // with flag
         secsPassed: 0,
         lives: lives,
-        hints: hints
+        hints: hints,
+        hintOn: false
     }
     gBoard = buildBoard()
     renderBoard(gBoard)
@@ -164,11 +165,12 @@ function onCellClicked(i, j) {
         renderBoard(gBoard)
         setTimer()
     }
-
+    if (gGame.hintOn) return
     if (gGame.isOn) {
         const elCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
         if (elCell.classList.contains('shown')) return
         if (elCell.classList.contains('marked')) return
+        if (elCell.classList.contains('hint-shown')) return
         if (elCell.classList.contains('mine')) {
             gGame.lives--
             checkGameOver()
@@ -203,8 +205,9 @@ function renderTimer() {
 }
 
 function revealCell(elCell, rowIdx, colIdx) {
-    if (!gGame.isOn) return
-    if (elCell.classList.contains("shown")) return
+    // new change!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // if (!gGame.isOn) return
+    // if (elCell.classList.contains("shown")) return
 
     const cell = gBoard[rowIdx][colIdx]
     if (elCell.classList.contains("mine")) {
@@ -255,7 +258,9 @@ function expandShown(rowIdx, colIdx) {
 function onCellMarked(event, elCell, i, j) {
     event.preventDefault()
     if (!gGame.isOn) return
+    if (gGame.hintOn) return
     if (elCell.classList.contains('shown')) return
+    // if (elCell.classList.contains('hint-shown')) return
     if (elCell.classList.contains("marked")) {
         elCell.classList.remove("marked")
         elCell.innerText = ''
@@ -320,6 +325,44 @@ function onReset() {
 }
 
 function onHintClicked(elHint) {
+    if (!gGame.isOn) return
+    if (elHint.classList.contains("marked")) return
 
+    var i = Math.floor(Math.random() * (gGame.size))
+    var j = Math.floor(Math.random() * (gGame.size))
+    if ((gBoard[i][j].isMarked) || (gBoard[i][j].isShown)) return onHintClicked(elHint)
+
+    elHint.classList.add("marked")
+    gGame.hintOn = true
+
+    var prevBoardHTML = document.querySelector(".board").innerHTML
+    // console.log('hi')
+    hintShown(i, j)
+    setTimeout(() => {
+        // console.log('bye')
+        var currBoard = document.querySelector(".board")
+        currBoard.innerHTML = prevBoardHTML
+        gGame.hintOn = false
+        // console.log(timeOut)
+    }, 300)
 }
 
+function hintShown(rowIdx, colIdx) {
+    // console.log('hihi', rowIdx, colIdx)
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (j < 0 || j >= gBoard[0].length) continue
+            // console.log(i, j)
+            var currCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
+            if (!currCell.classList.contains("shown")) {
+                currCell.classList.add("hint-shown")
+                if (currCell.classList.contains("mine")) {
+                    currCell.innerText = '💣'
+                } else if (!currCell.classList.contains("negs-0")) {
+                    currCell.innerText = gBoard[i][j].minesAroundCount
+                }
+            }
+        }
+    }
+}

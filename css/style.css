@@ -58,7 +58,8 @@ table {
 
 .marked,
 .cell.mine.shown,
-.game-over {
+.game-over,
+.hint-shown {
     background-color: var(--clr-3-0);
 }
 
@@ -93,6 +94,12 @@ button {
     padding: 0.5em;
     border-radius: 1em;
     cursor: pointer;
+    transition-duration: 0.4s;
+}
+
+button:active {
+    box-shadow: 0 0.4em 0.7em var(--clr-0-0);
+    transform: translateY(0.3em);
 }
 
 .reset-btn,
